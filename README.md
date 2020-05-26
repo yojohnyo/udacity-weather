@@ -9,7 +9,6 @@ This will require modifying the `server.js` file and the `website/app.js` file. 
 ## Installing with npm
 Once you have node installed on your machine, you'll need few extra packages.  To install them from the project root, use these commands:
 
-```npm init```
 
 ```npm install express```
 
