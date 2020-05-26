@@ -4,10 +4,49 @@
 let d = new Date();
 let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
 
-/* Function to POST data */
+let baseURL = "http://api.openweathermap.org/data/2.5/weather?zip=";
+let apiKey = "&appid=588f892ff7353c2335191fa7b7ea05d1&units=imperial";
+
+/* Event listener for Generate Click */
+const generateButton = document.getElementById('generate');
+generateButton.addEventListener('click', action);
+
+/*Event listener for enter key */
+document.addEventListener('keyup', function (e) {
+    if (e.key === 'Enter') {
+        action()
+    }
+
+})
+
+/* Retrieve form data then do api call and post results to the server */
+function action(event) {
+    const zip = document.getElementById('zip');
+    const note = document.getElementById('feelings');
+    getWeather(baseURL, apiKey, zip.value)
+        .then(function (data) {
+            postData('/formData', {'zip':zip.value, 'date': newDate, 'temp':data.main.temp, 'note': note.value});
+        })
+        .then(updateUI);
+}
+
+
+/* Function to do api call */
+const getWeather = async ( baseURL, key, zip) => {
+    const response = await fetch(baseURL+zip+key)
+    try {
+        const newData = await response.json();
+        console.log(newData.main.temp);
+        return newData
+    }catch(error) {
+        console.log("error".error);
+        // appropriately handle the error
+    }
+}
+
+/* Function to POST data to server */
 const postData = async ( url = '', data = {})=>{
-    console.log(data)
-    const response = await fetch('', {
+    const response = await fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         credentials: 'same-origin', // include, *same-origin, omit
         headers: {
@@ -18,39 +57,27 @@ const postData = async ( url = '', data = {})=>{
 
     try {
         const newData = await response.json();
-        console.log(newData);
+        console.log(newData.base);
         return newData
     }catch(error) {
         console.log('hello');
-        console.log("error".error);
+        console.log("error", error);
         // appropriately handle the error
     }
 }
 
-const getZipCode = async (baseURL, zip, key)=>{
-    const res = await fetch('/sendZip');
-    try {
-        const data = await res.json();
-        console.log(data);
+/* Send get request to get data and update UI to display the last entry */
+const updateUI = async () => {
+    const request = await  fetch('/all')
+    try{
+        const allData = await request.json();
+        let recentEntry = allData.pop();
+        document.getElementById('date').innerText = `Entry Date: ${recentEntry.date}`;
+        document.getElementById('temp').innerText = `Temperature (F): ${recentEntry.temp}`;
+        document.getElementById('content').innerText = `Note: ${recentEntry.note}`;
+        console.log(allData.pop());
     } catch (e) {
-        console.log('error'.error);
+        console.log("error".endsWith());
 
     }
-}
-
-
-// TODO-Call Function
-console.log('here')
-postData('/formData', {animal:'Giraff'});
-
-// Event listener for Generate Click
-const generateButton = document.getElementById('generate');
-
-generateButton.addEventListener('click', clicked);
-
-function clicked(event) {
-    console.log("Clicked")
-    const zip = document.getElementById('zip');
-    console.log(zip.value);
-    postData('/formData', {zip:zip.value});
 }

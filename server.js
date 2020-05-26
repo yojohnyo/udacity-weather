@@ -36,15 +36,23 @@ let postData=[];
 app.post('/formData', getZip);
 
 // // GET route
-app.get('/zip', sendData);
+app.get('/all', sendData);
 
 function sendData (request, response) {
+    console.log(postData);
     response.send(postData);
 };
 
 
 
 function getZip(req, res) {
+    newEntry = {
+        zip: req.body.zip,
+        date: req.body.date,
+        temp: req.body.temp,
+        note: req.body.note
+    }
+    postData.push()
     postData.push(req.body);
-    console.log(postData);
+    // console.log(postData);
 }
